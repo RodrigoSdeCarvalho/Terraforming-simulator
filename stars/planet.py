@@ -12,7 +12,10 @@ class Planet(Thread):
         self.name = name
 
     def nuke_detected(self, damage):
-        self.terraform -= damage
+        # diminuindo a % inabitável do planeta
+        # x10 para a simulação não demorar muito 
+        # visto que o random() que gera o damage tem um range de [0,1)
+        self.terraform -= (damage * 10)
         print(f"[NUKE DETECTION] - The planet {self.name} was bombed. {self.terraform}% UNHABITABLE")
 
     def print_planet_info(self):

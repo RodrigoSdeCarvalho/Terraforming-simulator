@@ -11,6 +11,9 @@ from threading import Lock
 release_system = False
 mutex_print = Lock()
 planets = {}
+planets_locks = {}
+north_poles_locks = {}
+south_poles_locks = {}
 bases = {}
 mines = {}
 simulation_time = None
@@ -62,3 +65,27 @@ def set_simulation_time(time):
 def get_simulation_time():
     global simulation_time
     return simulation_time
+
+#adiciona um mutex referente a um planeta no dicionario global
+def add_planet_lock(planet_name):
+    global planets_locks
+    global north_poles_locks
+    global south_poles_locks
+
+    planets_locks[planet_name] = Lock()
+    north_poles_locks[planet_name] = Lock()
+    south_poles_locks[planet_name] = Lock()
+
+# retorna uma referência para o mutex do planeta
+def get_planet_lock(planet_name) -> Lock:
+    global planets_locks
+    return planets_locks[planet_name]
+
+def get_north_pole_lock(planet_name) -> Lock:
+    global north_poles_locks
+    return north_poles_locks[planet_name]
+
+def get_south_pole_lock(planet_name) -> Lock:
+    global south_poles_locks
+    return south_poles_locks[planet_name]
+    

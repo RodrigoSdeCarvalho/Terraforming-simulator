@@ -1,5 +1,6 @@
 from random import randrange, random
 from time import sleep
+import globals
 
 
 class Rocket:
@@ -16,19 +17,43 @@ class Rocket:
             
 
     def nuke(self, planet): # Permitida a alteração
-        self.damage()
-        print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on North Pole")
-        print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on South Pole")
-        pass
+        planet_damage = self.damage()
+        planet_lock = globals.get_planet_lock(planet.name)
+
+        north_or_south_pole = random()
+
+        if(north_or_south_pole < 0.51):
+            globals.get_north_pole_lock(planet.name).aquire()
+            print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on North Pole")
+        else:
+            globals.get_south_pole_lock(planet.name).aquire()
+            print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on South Pole")
+
+
+        planet_lock.acquire()
+        planet.nuke_detected(planet_damage, random())
+        planet_lock.release()
+
+        if(north_or_south_pole < 0.51):
+            globals.get_north_pole_lock(planet.name).release()
+        else:
+            globals.get_south_pole_lock(planet.name).release()
+
     
     def voyage(self, planet): # Permitida a alteração (com ressalvas)
+
+
+        #TODO: Funcionamento diferente para o foguete LION que só vai para a lua.
 
         # Essa chamada de código (do_we_have_a_problem e simulation_time_voyage) não pode ser retirada.
         # Você pode inserir código antes ou depois dela e deve
         # usar essa função.
         self.simulation_time_voyage(planet)
         failure =  self.do_we_have_a_problem()
-        self.nuke(planet)
+
+        #Se nao falhou na viagem, atinge o planeta destino
+        if(not failure):
+            self.nuke(planet)
 
 
 

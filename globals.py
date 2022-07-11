@@ -17,6 +17,8 @@ south_poles_locks = {}
 bases = {}
 mines = {}
 simulation_time = None
+oil_mutex = Lock() #Pedir pro Bruno depois
+uranium_mutex = Lock() #Pedir pro Bruno depois
 
 def acquire_print():
     global mutex_print
@@ -88,4 +90,11 @@ def get_north_pole_lock(planet_name) -> Lock:
 def get_south_pole_lock(planet_name) -> Lock:
     global south_poles_locks
     return south_poles_locks[planet_name]
-    
+
+def get_oil_mutex():
+    global oil_mutex
+    return oil_mutex
+
+def get_uranium_mutex():
+    global uranium_mutex
+    return uranium_mutex    

@@ -1,7 +1,6 @@
 from threading import Thread
 from random import randint
 from time import sleep
-
 import globals
 
 
@@ -12,7 +11,6 @@ import globals
 ######################################################################
 
 class StoreHouse(Thread):
-
     def __init__(self, unities, location, constraint):
         Thread.__init__(self)
         self.unities = unities
@@ -23,11 +21,14 @@ class StoreHouse(Thread):
         print(f"🔨 - [{self.location}] - {self.unities} uranium unities are produced.")
 
     def produce(self):
+        uranium_mutex = globals.get_uranium_mutex()
+
         if(self.unities < self.constraint):
+            uranium_mutex.acquire()
             self.unities+=15
             self.print_store_house()
+            uranium_mutex.release()
         sleep(0.001)
-        
 
     def run(self):
         globals.acquire_print()

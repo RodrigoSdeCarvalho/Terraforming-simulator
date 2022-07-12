@@ -3,7 +3,6 @@ from time import sleep
 
 import globals
 
-
 ######################################################################
 #                                                                    #
 #              Não é permitida a alteração deste arquivo!            #
@@ -24,9 +23,13 @@ class Pipeline(Thread):
         )
 
     def produce(self):
+        oil_mutex = globals.get_oil_mutex()
+
         if(self.unities < self.constraint):
+            oil_mutex.acquire()
             self.unities += 17
             self.print_pipeline()
+            oil_mutex.release()
         sleep(0.001)
 
     def run(self):

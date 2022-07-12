@@ -53,8 +53,8 @@ class SpaceBase(Thread):
         oil_mine = globals.get_mines_ref()["oil_earth"]
         oil_mutex = globals.get_oil_mutex()
 
+        oil_mutex.acquire()
         if self.mine_has_enough_oil(oil_mine):
-            oil_mutex.acquire()
             needed_oil = self.calculate_needed_oil()
             oil_mine.unities -= needed_oil
             self.fuel += needed_oil
@@ -64,8 +64,8 @@ class SpaceBase(Thread):
         uranium_mine = globals.get_mines_ref()["uranium_earth"] 
         uranium_mutex = globals.get_uranium_mutex()
 
+        uranium_mutex.acquire()
         if self.mine_has_enough_uranium(uranium_mine): 
-            uranium_mutex.acquire()
             needed_uranium = self.calculate_needed_oil()
             uranium_mine.unities -= needed_uranium
             self.fuel += needed_uranium

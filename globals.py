@@ -16,6 +16,7 @@ north_poles_locks = {}
 south_poles_locks = {}
 bases = {}
 mines = {}
+not_terraformed_planets = []
 simulation_time = None
 oil_mutex = Lock() #Pedir pro Bruno depois
 uranium_mutex = Lock() #Pedir pro Bruno depois
@@ -97,4 +98,13 @@ def get_oil_mutex():
 
 def get_uranium_mutex():
     global uranium_mutex
-    return uranium_mutex    
+    return uranium_mutex
+
+def add_not_terraformed_planets(planet):
+    not_terraformed_planets.append(planet)
+
+def get_not_terraformed_planets():
+    return not_terraformed_planets
+
+def remove_not_terraformed_planets(planet):
+    not_terraformed_planets.remove(planet)

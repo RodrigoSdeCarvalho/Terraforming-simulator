@@ -10,5 +10,5 @@ class RocketLauncher(Thread):
         Thread.__init__(self)
         self.rocket = rocket
 
-    def run(self):
-        pass
+    def run(self, base, planet):
+        self.rocket.launch(base, planet)

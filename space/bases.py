@@ -114,9 +114,27 @@ class SpaceBase(Thread):
                 self.refuel_uranium()
                 
             #lancar_foguete()
+
+            self.verify_if_planets_are_terraformed()
             
     def base_has_full_oil(self):
         return self.fuel >= self.constraints[1]
 
     def base_has_full_uranium(self):
         return self.uranium >= self.constraints[0]
+    
+    def verify_if_planets_are_terraformed(self):
+        not_terraformed_planet= globals.get_not_terraformed_planets()
+
+        for planet in not_terraformed_planet:
+            globals.get_planet_lock(planet.name).acquire()
+            if planet.terraform == 0:
+                globals.remove_not_terraformed_planets(planet)
+
+            globals.get_planet_lock(planet.name).release()
+
+        if len(globals.get_not_terraformed_planets()) > 0:
+            return False
+            
+        return True
+

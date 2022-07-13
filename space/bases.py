@@ -107,13 +107,30 @@ class SpaceBase(Thread):
             pass
 
         while(True):
-            if not self.base_has_full_oil(): #Oil e Fuel devem sempre manter-se cheio, segundo o Varguita
-                self.refuel_oil()
+            rocket_to_launch = None
+            
+            
+            if self.name != "moon":
+                if not self.base_has_full_oil(): #Oil e Fuel devem sempre manter-se cheio, segundo o Varguita
+                    self.refuel_oil()
 
-            if not self.base_has_full_uranium():
-                self.refuel_uranium()
-                
-            #lancar_foguete()
+                if not self.base_has_full_uranium():
+                    self.refuel_uranium()
+
+                moon_needs_resources_mutex = globals.get_moon_needs_resources_mutex()
+                moon_needs_resources_mutex.acquire()
+                if globals.get_moon_needs_resources():
+                    rocket_to_launch = Rocket('LION')
+                    self.fuel_lion_rocket(rocket_to_launch)
+                    globals.set_moon_needs_resources(False)
+                moon_needs_resources_mutex.release()
+
+            else:
+                if self.uranium == 0 or self.fuel == 0:
+                    globals.set_moon_needs_resources(True)
+            
+            #self.launch_rocket(rocket_to_launch)
+
 
             self.verify_if_planets_are_terraformed()
             
@@ -122,7 +139,7 @@ class SpaceBase(Thread):
 
     def base_has_full_uranium(self):
         return self.uranium >= self.constraints[0]
-    
+
     def verify_if_planets_are_terraformed(self):
         not_terraformed_planet= globals.get_not_terraformed_planets()
 
@@ -138,3 +155,15 @@ class SpaceBase(Thread):
             
         return True
 
+    def fuel_lion_rocket(self, lion_rocket: Rocket):
+        lion_fuel = 120
+        lion_uranium = 75
+
+        self.fuel -= lion_fuel
+        self.uranium -= lion_uranium
+        
+        lion_rocket.fuel_cargo += lion_fuel
+        lion_rocket.uranium_cargo += lion_uranium
+
+    
+        

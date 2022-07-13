@@ -23,6 +23,7 @@ uranium_mutex = Lock() #Pedir pro Bruno depois
 moon_needs_resources = False
 moon_needs_resources_mutex = Lock()
 fuel_rocket_mutex = Lock()
+moon_resources_mutex = Lock()
 
 def acquire_print():
     global mutex_print
@@ -130,3 +131,7 @@ def get_fuel_rocket_mutex():
 def get_moon_needs_resources_mutex():
     global moon_needs_resources_mutex
     return moon_needs_resources_mutex
+
+def get_moon_resources_mutex():
+    global moon_resources_mutex
+    return moon_resources_mutex

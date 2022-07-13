@@ -21,6 +21,9 @@ class SpaceBase(Thread):
         print(f"🔭 - [{self.name}] → 🪨  {self.uranium}/{self.constraints[0]} URANIUM  ⛽ {self.fuel}/{self.constraints[1]}  🚀 {self.rockets}/{self.constraints[2]}")
 
     def base_rocket_resources(self, rocket_name):
+        if (self.name == 'MOON'):
+            globals.get_moon_resources_mutex().acquire()
+
         match rocket_name:
             case 'DRAGON':
                 if self.uranium > 35 and self.fuel > 50:
@@ -49,6 +52,10 @@ class SpaceBase(Thread):
                         self.fuel = self.fuel - 115
             case _:
                 print("Invalid rocket name")
+        
+        if (self.name == 'MOON'):
+            globals.get_moon_resources_mutex().release()
+        
 
     def refuel_oil(self):
         oil_mine = globals.get_mines_ref()["oil_earth"]
@@ -126,8 +133,10 @@ class SpaceBase(Thread):
                 moon_needs_resources_mutex.release()
 
             else:
+                globals.get_moon_resources_mutex().acquire()
                 if self.uranium == 0 or self.fuel == 0:
                     globals.set_moon_needs_resources(True)
+                globals.get_moon_resources_mutex().release()
             
             #self.launch_rocket(rocket_to_launch)
 

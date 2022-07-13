@@ -41,19 +41,34 @@ class Rocket:
 
     
     def voyage(self, planet): # Permitida a alteração (com ressalvas)
+        
+        bases_ref = globals.get_bases_ref()
+        if self.name == 'LION':
+            moon_base = bases_ref['moon']
 
+            failure =  self.do_we_have_a_problem()
 
-        #TODO: Funcionamento diferente para o foguete LION que só vai para a lua.
+            #Se nao falhou na viagem, preenche os recursos da lua
+            if(not failure):
+                globals.get_moon_resources_mutex().acquire()
+                moon_base.uranium += 75
+                moon_base.fuel += 120
+                globals.get_moon_resources_mutex().release()
+            else:
+                #se der falha, solicita um novo foguete
+                globals.get_moon_needs_resources_mutex().acquire()
+                globals.set_moon_needs_resources(False)
+                globals.get_moon_needs_resources_mutex().release()
+        else:
+            # Essa chamada de código (do_we_have_a_problem e simulation_time_voyage) não pode ser retirada.
+            # Você pode inserir código antes ou depois dela e deve
+            # usar essa função.
+            self.simulation_time_voyage(planet)
+            failure =  self.do_we_have_a_problem()
 
-        # Essa chamada de código (do_we_have_a_problem e simulation_time_voyage) não pode ser retirada.
-        # Você pode inserir código antes ou depois dela e deve
-        # usar essa função.
-        self.simulation_time_voyage(planet)
-        failure =  self.do_we_have_a_problem()
-
-        #Se nao falhou na viagem, atinge o planeta destino
-        if(not failure):
-            self.nuke(planet)
+            #Se nao falhou na viagem, atinge o planeta destino
+            if(not failure):
+                self.nuke(planet)
 
 
 

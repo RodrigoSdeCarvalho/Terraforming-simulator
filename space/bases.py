@@ -118,7 +118,7 @@ class SpaceBase(Thread):
             
             
             if self.name != "moon":
-                if not self.base_has_full_oil(): #Oil e Fuel devem sempre manter-se cheio, segundo o Varguita
+                if not self.base_has_full_oil():
                     self.refuel_oil()
 
                 if not self.base_has_full_uranium():
@@ -134,15 +134,22 @@ class SpaceBase(Thread):
 
             else:
                 globals.get_moon_resources_mutex().acquire()
-                if self.uranium == 0 or self.fuel == 0:
+                if self.uranium < 35 or self.fuel < 0:
                     globals.set_moon_needs_resources(True)
                 globals.get_moon_resources_mutex().release()
             
-            #self.launch_rocket(rocket_to_launch)
+            #TODO: find planet to nuke
+            #TODO: find rocket based on base resources
 
+            #CODIGO QUE LANÇA O FOGUETE
+            #PRECISA FAZER O ROCKET_TO_LAUNCH E PLANET_TO_NUKE
+            #rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
+            #rocket_launcher.start()
 
-            self.verify_if_planets_are_terraformed()
-            
+            if(self.verify_if_planets_are_terraformed()):
+                #TODO: verify how to print time elapsed
+                break
+    
     def base_has_full_oil(self):
         return self.fuel >= self.constraints[1]
 
@@ -150,6 +157,7 @@ class SpaceBase(Thread):
         return self.uranium >= self.constraints[0]
 
     def verify_if_planets_are_terraformed(self):
+        #TODO: add mutex to protect this access to not terraformed planets
         not_terraformed_planet= globals.get_not_terraformed_planets()
 
         for planet in not_terraformed_planet:

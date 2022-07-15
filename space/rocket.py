@@ -1,4 +1,5 @@
 from random import randrange, random
+import sys
 from time import sleep
 import globals
 
@@ -23,10 +24,10 @@ class Rocket:
         north_or_south_pole = random()
 
         if(north_or_south_pole < 0.51):
-            globals.get_north_pole_lock(planet.name).aquire()
+            globals.get_north_pole_lock(planet.name).acquire()
             print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on North Pole")
         else:
-            globals.get_south_pole_lock(planet.name).aquire()
+            globals.get_south_pole_lock(planet.name).acquire()
             print(f"[EXPLOSION] - The {self.name} ROCKET reached the planet {planet.name} on South Pole")
 
 

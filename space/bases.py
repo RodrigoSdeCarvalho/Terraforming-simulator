@@ -2,7 +2,9 @@ from time import sleep
 import globals
 from threading import Thread
 from space.rocket import Rocket
-from random import choice
+import random
+from rockets.RocketLauncher import RocketLauncher
+from stars.planet import Planet
 
 class SpaceBase(Thread):
 
@@ -131,25 +133,24 @@ class SpaceBase(Thread):
                     self.fuel_lion_rocket(rocket_to_launch)
                     globals.set_moon_needs_resources(False)
                 moon_needs_resources_mutex.release()
-
             else:
                 globals.get_moon_resources_mutex().acquire()
                 if self.uranium < 35 or self.fuel < 0:
                     globals.set_moon_needs_resources(True)
                 globals.get_moon_resources_mutex().release()
-            
+        
+            if rocket_to_launch == None:         
+                rocket_to_launch = self.select_rocket_to_launch()
+            planet_to_nuke = self.select_planet_to_nuke()
+            self.launch_rocket(rocket_to_launch, planet_to_nuke)   
+
+
             #TODO: find planet to nuke
             #TODO: find rocket based on base resources
 
             #CODIGO QUE LANÇA O FOGUETE
             #PRECISA FAZER O ROCKET_TO_LAUNCH E PLANET_TO_NUKE
-            #rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
-            #rocket_launcher.start()
 
-            if(self.verify_if_planets_are_terraformed()):
-                #TODO: verify how to print time elapsed
-                break
-    
     def base_has_full_oil(self):
         return self.fuel >= self.constraints[1]
 
@@ -182,5 +183,22 @@ class SpaceBase(Thread):
         lion_rocket.fuel_cargo += lion_fuel
         lion_rocket.uranium_cargo += lion_uranium
 
-    
+    def select_rocket_to_launch(self):
+        rocket_names = ["FALCON", "DRAGON"]
+        random_index_to_choose_rocket_name = random.randint(0, 1)
+        rocket_to_launch_name = rocket_names[random_index_to_choose_rocket_name]
+        rocket_to_launch = Rocket(rocket_to_launch_name)
+
+        return rocket_to_launch
+
+    def select_planet_to_nuke(self):
+        not_terraformed_planets= globals.get_not_terraformed_planets()
+        random_index_to_choose_planet_name = random.randint(0, len(not_terraformed_planets) - 1)
+        planet_to_nuke = not_terraformed_planets[random_index_to_choose_planet_name]
         
+        return planet_to_nuke
+
+    def launch_rocket(self, rocket_to_launch: Rocket, planet_to_nuke: Planet):
+        self.base_rocket_resources(rocket_to_launch.name)
+        rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
+        rocket_launcher.start()

@@ -23,6 +23,7 @@ class Planet(Thread):
 
     def run(self):
         globals.add_planet_lock(self.name)
+        globals.add_not_terraformed_planets(self) #protect with mutex
         globals.acquire_print()
         self.print_planet_info()
         globals.release_print()

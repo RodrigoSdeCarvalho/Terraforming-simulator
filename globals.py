@@ -24,6 +24,7 @@ moon_needs_resources = False
 moon_needs_resources_mutex = Lock()
 fuel_rocket_mutex = Lock()
 moon_resources_mutex = Lock()
+not_terraformed_planets_mutex = Lock()
 
 def acquire_print():
     global mutex_print
@@ -127,6 +128,10 @@ def set_moon_needs_resources(bool):
 def get_fuel_rocket_mutex():
     global fuel_rocket_mutex
     return fuel_rocket_mutex
+
+def get_not_terraformed_planets_mutex():
+    global not_terraformed_planets_mutex
+    return not_terraformed_planets_mutex
 
 def get_moon_needs_resources_mutex():
     global moon_needs_resources_mutex

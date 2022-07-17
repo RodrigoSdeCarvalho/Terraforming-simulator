@@ -157,22 +157,6 @@ class SpaceBase(Thread):
     def base_has_full_uranium(self):
         return self.uranium >= self.constraints[0]
 
-    def verify_if_planets_are_terraformed(self):
-        #TODO: add mutex to protect this access to not terraformed planets
-        not_terraformed_planet= globals.get_not_terraformed_planets()
-
-        for planet in not_terraformed_planet:
-            globals.get_planet_lock(planet.name).acquire()
-            if planet.terraform == 0:
-                globals.remove_not_terraformed_planets(planet)
-
-            globals.get_planet_lock(planet.name).release()
-
-        if len(globals.get_not_terraformed_planets()) > 0:
-            return False
-            
-        return True
-
     def fuel_lion_rocket(self, lion_rocket: Rocket):
         lion_fuel = 120
         lion_uranium = 75
@@ -192,7 +176,9 @@ class SpaceBase(Thread):
         return rocket_to_launch
 
     def select_planet_to_nuke(self):
+        globals.get_not_terraformed_planets_mutex().acquire()
         not_terraformed_planets= globals.get_not_terraformed_planets()
+        globals.get_not_terraformed_planets_mutex().release()
         random_index_to_choose_planet_name = random.randint(0, len(not_terraformed_planets) - 1)
         planet_to_nuke = not_terraformed_planets[random_index_to_choose_planet_name]
         

@@ -25,6 +25,7 @@ moon_needs_resources_mutex = Lock()
 fuel_rocket_mutex = Lock()
 moon_resources_mutex = Lock()
 not_terraformed_planets_mutex = Lock()
+current_time = 0
 
 def acquire_print():
     global mutex_print
@@ -140,3 +141,11 @@ def get_moon_needs_resources_mutex():
 def get_moon_resources_mutex():
     global moon_resources_mutex
     return moon_resources_mutex
+
+def add_one_current_time():
+    global current_time
+    current_time += 1
+    
+def get_current_time():
+    global current_time
+    return current_time

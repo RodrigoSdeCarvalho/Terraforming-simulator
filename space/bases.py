@@ -116,40 +116,36 @@ class SpaceBase(Thread):
             pass
 
         while(True):
-            rocket_to_launch = None
-            
-            
-            if self.name != "moon":
-                if not self.base_has_full_oil():
-                    self.refuel_oil()
+            if len(globals.get_not_terraformed_planets()) > 0:
+                rocket_to_launch = None
+                
+                
+                if self.name != "moon":
+                    if not self.base_has_full_oil():
+                        self.refuel_oil()
 
-                if not self.base_has_full_uranium():
-                    self.refuel_uranium()
+                    if not self.base_has_full_uranium():
+                        self.refuel_uranium()
 
-                moon_needs_resources_mutex = globals.get_moon_needs_resources_mutex()
-                moon_needs_resources_mutex.acquire()
-                if globals.get_moon_needs_resources():
-                    rocket_to_launch = Rocket('LION')
-                    self.fuel_lion_rocket(rocket_to_launch)
-                    globals.set_moon_needs_resources(False)
-                moon_needs_resources_mutex.release()
+                    moon_needs_resources_mutex = globals.get_moon_needs_resources_mutex()
+                    moon_needs_resources_mutex.acquire()
+                    if globals.get_moon_needs_resources():
+                        rocket_to_launch = Rocket('LION')
+                        self.fuel_lion_rocket(rocket_to_launch)
+                        globals.set_moon_needs_resources(False)
+                    moon_needs_resources_mutex.release()
+                else:
+                    globals.get_moon_resources_mutex().acquire()
+                    if self.uranium < 35 or self.fuel < 0:
+                        globals.set_moon_needs_resources(True)
+                    globals.get_moon_resources_mutex().release()
+            
+                if rocket_to_launch == None:         
+                    rocket_to_launch = self.select_rocket_to_launch()
+                planet_to_nuke = self.select_planet_to_nuke()
+                self.launch_rocket(rocket_to_launch, planet_to_nuke)   
             else:
-                globals.get_moon_resources_mutex().acquire()
-                if self.uranium < 35 or self.fuel < 0:
-                    globals.set_moon_needs_resources(True)
-                globals.get_moon_resources_mutex().release()
-        
-            if rocket_to_launch == None:         
-                rocket_to_launch = self.select_rocket_to_launch()
-            planet_to_nuke = self.select_planet_to_nuke()
-            self.launch_rocket(rocket_to_launch, planet_to_nuke)   
-
-
-            #TODO: find planet to nuke
-            #TODO: find rocket based on base resources
-
-            #CODIGO QUE LANÇA O FOGUETE
-            #PRECISA FAZER O ROCKET_TO_LAUNCH E PLANET_TO_NUKE
+                break
 
     def base_has_full_oil(self):
         return self.fuel >= self.constraints[1]
@@ -179,12 +175,16 @@ class SpaceBase(Thread):
         globals.get_not_terraformed_planets_mutex().acquire()
         not_terraformed_planets= globals.get_not_terraformed_planets()
         globals.get_not_terraformed_planets_mutex().release()
+
         random_index_to_choose_planet_name = random.randint(0, len(not_terraformed_planets) - 1)
-        planet_to_nuke = not_terraformed_planets[random_index_to_choose_planet_name]
-        
-        return planet_to_nuke
+        planet_to_nuke_name = not_terraformed_planets[random_index_to_choose_planet_name]
+
+        planets_ref = globals.get_planets_ref()
+     
+        return planets_ref[planet_to_nuke_name.lower()]
 
     def launch_rocket(self, rocket_to_launch: Rocket, planet_to_nuke: Planet):
         self.base_rocket_resources(rocket_to_launch.name)
         rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
         rocket_launcher.start()
+        sleep(0.1)

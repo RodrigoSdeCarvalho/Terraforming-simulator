@@ -1,7 +1,9 @@
 from ntpath import join
 import os
+import signal
+import sys
 import globals
-from time import sleep
+from time import sleep, time
 from random import seed
 from datetime import datetime
 
@@ -10,7 +12,6 @@ from space.bases import SpaceBase
 from space.time import SimulationTime
 from mines.oil import Pipeline
 from mines.uranium import StoreHouse
-from verifyTerraform import VerifyTerraform
 
 ######################################################################
 #                                                                    #
@@ -101,14 +102,15 @@ def main():
     print("\n\n##################################### SIMULATION STARTED #####################################\n")
     globals.set_release_system()
 
-    #Foi necessario adicionar este codigo aqui para fazer
-    #as verificações dos planetas terraformados e encerrar o programa
 
-    terraform_checker = VerifyTerraform()
-    terraform_checker.start()
-    terraform_checker.join()
-    #TODO: Print anos que levaram
-    print()
+    #foi necessário adicionar este código aqui para esperar as threads terminarem
+    #e por fim, finalizar o programa
+    time_simulation.join()
+    oil_earth.join()
+    uranium_earth.join()
+
+    years_to_terraform = globals.get_current_time()
+    print("Foram necessários",years_to_terraform,"anos para terraformar todos os planetas")
 
 
 if __name__ == "__main__":

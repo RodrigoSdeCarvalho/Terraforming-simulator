@@ -39,4 +39,9 @@ class StoreHouse(Thread):
             pass
 
         while(True):
-            self.produce()
+            #foi necessário adicionar este IF para finalizar a thread
+            #e nao ficar em um loop eterno
+            if len(globals.get_not_terraformed_planets()) > 0:
+                self.produce()
+            else:
+                break

@@ -36,6 +36,8 @@ class SpaceBase(Thread):
                         self.fuel = self.fuel - 50
                     else:
                         self.fuel = self.fuel - 100
+                    return True
+                return False
             case 'FALCON':
                 if self.uranium > 35 and self.fuel > 90:
                     self.uranium = self.uranium - 35
@@ -45,6 +47,8 @@ class SpaceBase(Thread):
                         self.fuel = self.fuel - 90
                     else:
                         self.fuel = self.fuel - 120
+                    return True
+                return False
             case 'LION':
                 if self.uranium > 35 and self.fuel > 100:
                     self.uranium = self.uranium - 35
@@ -52,9 +56,11 @@ class SpaceBase(Thread):
                         self.fuel = self.fuel - 100
                     else:
                         self.fuel = self.fuel - 115
+                    return True
+                return False
             case _:
                 print("Invalid rocket name")
-        
+                return False
         if (self.name == 'MOON'):
             globals.get_moon_resources_mutex().release()
         
@@ -176,7 +182,10 @@ class SpaceBase(Thread):
         not_terraformed_planets= globals.get_not_terraformed_planets()
         globals.get_not_terraformed_planets_mutex().release()
 
-        random_index_to_choose_planet_name = random.randint(0, len(not_terraformed_planets) - 1)
+        if len(not_terraformed_planets) > 1:
+            random_index_to_choose_planet_name = random.randint(0, len(not_terraformed_planets) - 1)
+        else:
+            random_index_to_choose_planet_name = 0
         planet_to_nuke_name = not_terraformed_planets[random_index_to_choose_planet_name]
 
         planets_ref = globals.get_planets_ref()
@@ -184,7 +193,6 @@ class SpaceBase(Thread):
         return planets_ref[planet_to_nuke_name.lower()]
 
     def launch_rocket(self, rocket_to_launch: Rocket, planet_to_nuke: Planet):
-        self.base_rocket_resources(rocket_to_launch.name)
-        rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
-        rocket_launcher.start()
-        sleep(0.1)
+        if self.base_rocket_resources(rocket_to_launch.name):
+            rocket_launcher = RocketLauncher(rocket_to_launch, self, planet_to_nuke)
+            rocket_launcher.start()
